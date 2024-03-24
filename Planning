@@ -1,0 +1,29 @@
+Planning
+
+For every user, ask them to select a folder (user = folder)
+
+Then, this folder contains all files (thus files should be opened from and saved in this folder)
+
+It is ideal if it provides a visualization of the folder structure
+
+Every file has an id that identifies it.
+
+https://stackblitz.com/edit/quill-to-pdf-demo?file=src%2Fapp%2Fapp.component.ts
+
+1. Awards / Honors
+
+2. Activities
+
+3. Education
+
+4. Personal Qualities
+
+5. Research Experience
+
+6. Question-Specific Responses
+
+7. Custom
+
+Resume 还能有什么 modules
+
+maybe choose project in resume.html
