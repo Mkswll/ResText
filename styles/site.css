@@ -1,0 +1,192 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap");
+
+
+/* :root { */
+    /* --white: #fff;
+    --darkblue: #3a5a6e; */
+/* } */
+
+body {
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+    font-family: "Poppings", sans-serif;
+}
+
+header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-align: left;
+    background: hsla(210, 100%, 79%, 0.755);
+    border-bottom: 1px solid gray;
+    width: 100vw; 
+    height: 80px;
+}
+
+header * {
+    margin-left: 30px;
+    color: rgb(71, 61, 78);
+}
+
+button {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    outline: none; 
+    order: none;
+    padding: 5px 10px;
+    margin: 5px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.button {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    outline: none; 
+    order: none;
+    padding: 5px 10px;
+    margin: 5px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+button:hover,
+button:focus {
+    /* background-color: #888; */
+    /* color: #888; */
+    background: #a1b0ba;
+}
+
+.modal { 
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+  
+  /* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+}
+  
+/* The Close Button */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+  
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+textarea {
+    /* width: calc(99vw); */
+    /* height: calc(100vh - 73px); */
+    padding: 5px;
+    outline: none;
+    border: 1px red solid;
+    resize: none;
+}
+
+filebox {
+    display: flex;
+    padding: 5px;
+    margin-left: 40px;
+
+}
+
+.resume-textarea {
+    /* margin-top: 30px;
+    margin-left: 20px; */
+    /* margin: 20px; */
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 15px;
+    width: 500px;
+
+    border: 1px solid gray;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+toolbar {
+    display: flex;
+    align-items: center;
+    margin: 10px;
+    /* background-color: gray; */
+    /* outline: black; */
+}
+
+editbox {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    float: right;
+    width: 50%;
+}
+
+choicebox {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    float: left;
+    width: 40%;
+}
+
+/* clickable table styles */
+
+.table-clickable {
+    text-align: left;
+    border-collapse: collapse;
+    border-left: 1px solid var(--darkblue);
+    border-right: 1px solid var(--darkblue);
+    margin: 20px auto;
+  }
+  
+.table-clickable th,
+.table-clickable tbody a {
+    padding: 20px 10px;
+}
+  
+.table-clickable th {
+    color: var(--white);
+    background: var(--darkblue);
+}
+  
+.table-clickable tbody a {
+    display: block;
+    text-decoration: none;
+    transition: all 0.25s ease-out;
+}
+  
+.table-clickable tbody tr:not(:first-child) td a {
+    border-top: 1px solid var(--darkblue);
+}
+  
+.table-clickable tbody tr:last-child td a {
+    border-bottom: 1px solid var(--darkblue);
+}
+  
+.table-clickable tbody tr:hover a {
+    color: var(--white);
+    background: var(--darkblue);
+}
+  

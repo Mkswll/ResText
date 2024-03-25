@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="site.css">
+    <link rel="stylesheet" href="./styles/site.css">
     <title>Module Editor</title>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
@@ -24,9 +24,22 @@
 <body>
     <section>
         <header>
-            <h2> Resume Editor </h2>
-            <a href = "index.html"> Home </a>
+            <h2> ResText - Module Editor </h2>
+            <a href = "index.html"> Menu </a>
         </header>
+
+        <div style="display: flex; flex-direction: column; margin-left: 20px;">
+            <h4> File Options:</h4>
+            <div style="display: flex; align-items: center; padding-left: 20px;">
+                <!-- <input type="button" class="button" id="open" value="Open"></input> -->
+                <button id="open"> Open </button>
+                <button id="save"> Save </button>
+                <button id="export"> Export </button>
+                <button id="console"> Print Delta </button>
+                <button id="loadModules"> Load Modules </button>
+            </div>
+            
+        </div>
     </section>
     Nothing to display yet.
 
@@ -44,6 +57,6 @@
         <div id="editor"></div>
     </editbox>
 
-    <script type="module" src="module.js"></script>
+    <script type="module" src="./src/module.js"></script>
 </body>
 </html>
