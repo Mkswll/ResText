@@ -18,7 +18,8 @@ header {
     flex-direction: row;
     align-items: center;
     text-align: left;
-    background: hsla(210, 100%, 79%, 0.755);
+    background: hsla(0, 41%, 73%, 0.679);
+    /* background: hsla(176, 39%, 60%, 0.542); */
     border-bottom: 1px solid gray;
     width: 100vw; 
     height: 80px;
@@ -26,7 +27,7 @@ header {
 
 header * {
     margin-left: 30px;
-    color: rgb(71, 61, 78);
+    color: rgb(45, 40, 77);
 }
 
 button {
@@ -53,8 +54,7 @@ button {
     cursor: pointer;
 }
 
-button:hover,
-button:focus {
+button:hover {
     /* background-color: #888; */
     /* color: #888; */
     background: #a1b0ba;
@@ -136,19 +136,21 @@ toolbar {
 }
 
 editbox {
-    padding: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
     display: flex;
     flex-direction: column;
     float: right;
-    width: 50%;
+    width: 60%;
 }
 
 choicebox {
-    padding: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
     display: flex;
     flex-direction: column;
     float: left;
-    width: 40%;
+    width: 30%;
 }
 
 /* clickable table styles */
@@ -189,4 +191,55 @@ choicebox {
     color: var(--white);
     background: var(--darkblue);
 }
-  
+
+
+.search-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+}
+
+.file-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: .25rem;
+    margin-top: 1rem;
+}
+
+.module-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: .25rem;
+    margin-top: 1rem;
+}
+.card {
+    border: 1px solid rgb(173, 173, 173);
+    background-color: white;
+    padding: .5rem;
+    cursor: pointer;
+}
+
+.card > .header {
+    margin-bottom: .25rem;
+}
+
+.card > .body {
+    font-size: .8rem;
+    color: #777;
+}
+
+.card > .type {
+    font-size: .8rem;
+    color: #777;
+}
+
+.card > .preview {
+    font-size: .8rem;
+    color: #2822d6;
+    text-decoration: underline;
+}
+
+
+.hide {
+    display: none;
+}

@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./styles/site.css">
-    <title>Module Editor</title>
+    <link rel="stylesheet" href="./styles/module.css">
+    <title>ResText</title>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     
@@ -34,23 +35,66 @@
                 <!-- <input type="button" class="button" id="open" value="Open"></input> -->
                 <button id="open"> Open </button>
                 <button id="save"> Save </button>
-                <button id="export"> Export </button>
+                <!-- <button id="export"> Export </button> -->
                 <button id="console"> Print Delta </button>
-                <button id="loadModules"> Load Modules </button>
             </div>
             
         </div>
+
+        <div id="modal" class="modal">
+            <div class="modal-content">
+                <span class="close" id="openClose"> &times; </span>
+                
+                
+                <div style="display: flex; align-items: center; padding-top: 10px; padding-bottom: 10px;">
+                    File Chosen: &nbsp; <div id="openFileChosen">None</div> &nbsp; 
+                    <button style="margin-left: 50px;" id="openFileConfirm"> Confirm </button>
+                    <h5 style="color: red; display: none; margin-top: 0px; margin-bottom: 0px; padding-left: 20px;" id="fileWarning">Please choose a file.</h5>
+                </div>
+                
+                
+                <div class="search-wrapper">
+                    <label for="searchFile">Search File:</label>
+                    <input type="search" id="searchFile" data-file-search>
+                </div>
+                <div class="file-cards" data-file-cards-container></div>
+                <template data-file-template>
+                    <div class="card">
+                        <div class="header" data-header></div>
+                        <div class="body" data-body></div>
+                        <div class="id" data-id style="display: none"></div>
+                        <div class="preview" style="width: fit-content;" data-preview>Preview</div>
+                    </div>
+                </template>
+                
+                <!-- <input type="file" accept=".json" class="hidden" id="openFile"> -->
+                
+                
+            </div>
+        </div>
+        
     </section>
     Nothing to display yet.
 
     <editbox>
-        <div style="display: flex; flex-direction: row;">
-            <div style="display: flex; flex-direction: row; margin: 10px">
-                Name:  <input type="text" id="fileName" style="margin-left: 10px; color: gray"></input>
+        <div style="display: flex; flex-direction: column;">
+            <div style="display: flex; flex-direction: row;">
+                <div style="display: flex; flex-direction: row; margin: 10px">
+                    Name:  <input type="text" id="fileName" style="margin-left: 10px; color: gray; width: 200px;"></input>
+                </div>
+                <div style="display: flex; flex-direction: row; margin: 10px">
+                    Draft Version: <input type="number" id="draftVersion" style="margin-left: 10px; color: gray; width: 50px;"></input>
+                </div>
             </div>
-            <div style="display: flex; flex-direction: row; margin: 10px">
-                Draft Version: <input type="number" id="draftVersion" style="margin-left: 10px; color: gray"></input>
+            <div style="display: flex; flex-direction: row;">
+                <div style="display: flex; flex-direction: row; margin: 10px">
+                    Module Type:  
+                    <select name="type" id="typeSelect" style="margin-left: 10px; color: gray">
+                    </select>
+                </div>
+                
             </div>
+            
         </div>
        
         <div id="toolbar"></div>

@@ -99,3 +99,5 @@ document.getElementById("projectPicker").addEventListener("change", (e) => {
     // console.log(JSON.parse(sessionStorage.getItem("project")));
     // console.log(sessionStorage.getItem("project"));
 });
+
+document.getElementById("confirmButton").addEventListener("click", (e) => {});
