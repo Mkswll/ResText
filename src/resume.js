@@ -81,7 +81,6 @@ var fileID = generateID();
 var draftID = generateID();
 var draftVersion = 1;
 var parentDraftID = "";
-var fileDefault = 1;
 var modal = document.getElementById("modal");
 var moduleModal = document.getElementById("moduleModal");
 var previewModal = document.getElementById("previewModal");
@@ -90,7 +89,7 @@ var fileConfirmButton = document.getElementById("openFileConfirm");
 var moduleConfirmButton = document.getElementById("openModuleConfirm");
 var saveButton = document.getElementById("save");
 var exportButton = document.getElementById("export");
-var consoleButton = document.getElementById("console");
+// var consoleButton = document.getElementById("console");
 var loadModulesButton = document.getElementById("loadModules");
 var fileWarning = document.getElementById("fileWarning");
 var saveWarning = document.getElementById("saveWarning");
@@ -309,9 +308,9 @@ moduleConfirmButton.addEventListener("click", (e) => {
     }
 });
 
-consoleButton.onclick = function () {
-    console.log(quill.getContents());
-};
+// consoleButton.onclick = function () {
+//     console.log(quill.getContents());
+// };
 
 var openClose = document.getElementById("openClose");
 openClose.onclick = function () {
@@ -389,7 +388,15 @@ saveButton.onclick = async function () {
         delta["parentDraftID"] = parentDraftID;
         let textToSave = JSON.stringify(delta);
         let blob = new Blob([textToSave], { type: "text/plain" });
-        saveAs(blob, generateSaveName(fileName));
+        let saveName = generateSaveName(fileName);
+        saveAs(blob, saveName);
+        // console.log(saveName);
+        // projectResumes[saveName] = textToSave;
+        // sessionStorage.setItem(
+        //     "projectResumes",
+        //     JSON.stringify(projectResumes)
+        // );
+        // loadPage();
         draftID = generateID();
     }
 };
@@ -453,7 +460,7 @@ var versionsTree = new Tree();
 var versionsHTML = "";
 
 function printTree(curNode) {
-    versionsHTML += "<li>";
+    versionsHTML += "<li class='triggerPreview' id='" + curNode.value + "'>";
     // console.log(curNode);
     var item = JSON.parse(projectResumes[resumesBST.search(curNode.value)]);
     versionsHTML += item.fileName + " (Version " + item.draftVersion + ")";
@@ -467,13 +474,9 @@ function printTree(curNode) {
 }
 
 function loadVersions() {
-    var str = "";
+    // var str = "";
     curVersions = new Set();
 
-    // console.log(projectResumes);
-    // console.log(fileDefault);
-    if (fileDefault) {
-    }
     root = -1;
     resumesBST.clear();
     versionsTree.clear();
@@ -495,21 +498,23 @@ function loadVersions() {
     if (versionsTree.size == 0) {
         versionsHTML = "This file only has the current version.";
     } else {
-        // console.log("here");
-
         versionsHTML = "<ul>";
-        // versionsHTML.textContent = "Hello";
-
         printTree(versionsTree.root);
         versionsHTML += "</ul>";
     }
 
     document.getElementById("versionList").innerHTML = versionsHTML;
+    const elements = document.getElementsByClassName("triggerPreview");
+    [...elements].forEach((item) => {
+        item.onclick = (e) => {
+            loadPreview(e.target.id, true);
+        };
+    });
 
-    if (str == "") {
-        str =
-            "<tr><td><a> This file only has the current version. </a></td></tr>";
-    }
+    // if (str == "") {
+    //     str =
+    //         "<tr><td><a> This file only has the current version. </a></td></tr>";
+    // }
     // document.getElementById("tableContent").innerHTML = str;
 }
 
