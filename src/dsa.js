@@ -16,44 +16,81 @@ export class BST {
     insert(key, value) {
         this.size++;
         var newNode = new BSTNode(key, value);
+
         if (this.root == null) {
             this.root = newNode;
         } else {
-            this.insertNode(this.root, newNode);
+            var curNode = this.root;
+            while (true) {
+                if (key < curNode.key) {
+                    if (curNode.left == null) {
+                        curNode.left = newNode;
+                        return;
+                    } else {
+                        curNode = curNode.left;
+                    }
+                } else {
+                    if (curNode.right == null) {
+                        curNode.right = newNode;
+                        return;
+                    } else {
+                        curNode = curNode.right;
+                    }
+                }
+            }
         }
     }
 
-    insertNode(curNode, newNode) {
-        if (newNode.key < curNode.key) {
-            if (curNode.left == null) {
-                curNode.left = newNode;
-            } else {
-                this.insertNode(curNode.left, newNode);
-            }
-        } else {
-            if (curNode.right == null) {
-                curNode.right = newNode;
-            } else {
-                this.insertNode(curNode.right, newNode);
-            }
-        }
-    }
+    // insertNode(curNode, newNode) {
+    //     if (newNode.key < curNode.key) {
+    //         if (curNode.left == null) {
+    //             curNode.left = newNode;
+    //         } else {
+    //             this.insertNode(curNode.left, newNode);
+    //         }
+    //     } else {
+    //         if (curNode.right == null) {
+    //             curNode.right = newNode;
+    //         } else {
+    //             this.insertNode(curNode.right, newNode);
+    //         }
+    //     }
+    // }
 
     search(key) {
         // console.log(key);
-        return this.searchValue(this.root, key);
+        // return this.searchValue(key);
+
+        var curNode = this.root;
+        while (curNode != null) {
+            if (key == curNode.key) {
+                break;
+            } else if (key < curNode.key) {
+                curNode = curNode.left;
+            } else curNode = curNode.right;
+        }
+        return curNode.value;
     }
 
-    searchValue(curNode, key) {
-        if (curNode == null) {
-            return null;
-        } else if (key == curNode.key) {
-            return curNode.value;
-        } else if (key < curNode.key) {
-            return this.searchValue(curNode.left, key);
-        } else {
-            return this.searchValue(curNode.right, key);
+    searchValue(key) {
+        // if (curNode == null) {
+        //     return null;
+        // } else if (key == curNode.key) {
+        //     return curNode.value;
+        // } else if (key < curNode.key) {
+        //     return this.searchValue(curNode.left, key);
+        // } else {
+        //     return this.searchValue(curNode.right, key);
+        // }
+        let curNode = this.root;
+        while (curNode != null) {
+            if (key == curNode.key) {
+                break;
+            } else if (key < curNode.key) {
+                curNode = curNode.left;
+            } else curNode = curNode.right;
         }
+        return curNode.value;
     }
 
     clear() {

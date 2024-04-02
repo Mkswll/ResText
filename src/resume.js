@@ -19,7 +19,6 @@ var toolbarOptions = [
     [{ list: "ordered" }, { list: "bullet" }],
     [{ direction: "rtl" }],
     // [{"indent": "-1"}, {"indent": "+1"}],
-    // [{"direction": "rtl"}],
 
     ["link", "image"],
 ];
@@ -152,7 +151,7 @@ function loadPreview(previewID, isResume) {
         };
     } else {
         delta = {
-            ops: JSON.parse(projectResumes[modulesBST.search(previewID)]).ops,
+            ops: JSON.parse(projectModules[modulesBST.search(previewID)]).ops,
         };
     }
 
@@ -292,12 +291,10 @@ moduleConfirmButton.addEventListener("click", (e) => {
     if (moduleSelectedID == -1) {
         document.getElementById("moduleWarning").style.display = "block";
     } else {
-        // console.log(moduleSelectedID);
         var openModule = JSON.parse(
             projectModules[modulesBST.search(moduleSelectedID)]
         );
         var delta = { ops: openModule.ops };
-        // console.log(cursor);
         if (cursor != null) {
             delta.ops.unshift({ retain: cursor.index });
         } else {
