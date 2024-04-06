@@ -1,11 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap");
 
 
-/* :root { */
-    /* --white: #fff;
-    --darkblue: #3a5a6e; */
-/* } */
-
 body {
     margin: 0;
     padding: 0;
@@ -19,8 +14,6 @@ header {
     flex-direction: row;
     align-items: center;
     text-align: left;
-    /* background: hsla(0, 41%, 73%, 0.679); */
-    /* background: hsla(176, 39%, 60%, 0.542); */
     background: #39c5bc80;
     border-bottom: 1px solid gray;
     width: 100vw; 
@@ -57,8 +50,6 @@ button {
 }
 
 button:hover {
-    /* background-color: #888; */
-    /* color: #888; */
     background: #a1b0ba;
 }
 
@@ -75,7 +66,6 @@ button:hover {
     background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
 }
   
-  /* Modal Content/Box */
 .modal-content {
     background-color: #fefefe;
     margin: 15% auto; /* 15% from the top and centered */
@@ -100,8 +90,6 @@ button:hover {
 }
 
 textarea {
-    /* width: calc(99vw); */
-    /* height: calc(100vh - 73px); */
     padding: 5px;
     outline: none;
     border: 1px red solid;
@@ -116,9 +104,6 @@ filebox {
 }
 
 .resume-textarea {
-    /* margin-top: 30px;
-    margin-left: 20px; */
-    /* margin: 20px; */
     margin-top: 10px;
     margin-bottom: 10px;
     margin-left: 15px;
@@ -133,17 +118,17 @@ toolbar {
     display: flex;
     align-items: center;
     margin: 10px;
-    /* background-color: gray; */
-    /* outline: black; */
 }
 
 editbox {
     padding-left: 20px;
     padding-right: 20px;
+    padding-bottom: 20px;
     display: flex;
     flex-direction: column;
     float: right;
     width: 60%;
+    border-left: solid gray
 }
 
 choicebox {

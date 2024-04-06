@@ -17,32 +17,10 @@ menubox {
     border-color: black;
     border-width: 2px;
     border-style: dashed;
-    /* box-sizing: border-box; */
 }
-
-/* menubutton { */
-    /* display: flex;
-    align-items: center;
-    text-align: center;
-    margin-left: auto;
-    margin-right: auto;
-    background-color: white;
-    outline: none; 
-    order: none;
-    padding: 5px 10px;
-    margin: 5px;
-    font-size: 15px;
-    cursor: pointer; */
-   
-    /* padding: 10px 10px; */
-    /* width: 100px; */
-/* } */
 
 menubutton:hover,
 menubutton:focus {
-    /* background-color: #888; */
-    /* color: #888; */
     background: #a1b0ba;
     cursor: pointer;
-    /* border-style: solid; */
 }

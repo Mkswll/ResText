@@ -1,11 +1,3 @@
-// var chooseDirectory = document.getElementById("chooseDirectory");
-
-// chooseDirectory.onclick = async function (e) {
-//     let dirHandle = await window.showDirectoryPicker();
-//     // console.log(dirHandle);
-//     process.chdir(dirHandle);
-// };
-
 var fileCount = 0;
 
 window.addEventListener("load", (e) => {

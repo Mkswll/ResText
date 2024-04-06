@@ -1,42 +1,42 @@
 import { BST, Tree } from "./dsa.js";
 const { jsPDF } = globalThis.jspdf;
 
-function generateID() {
-    return Math.floor(Math.random() * 1000000).toString();
-}
+/* sets up the text editor */
 
-/* Sets up the text editor */
-
+/* chooses which text options and design options are to be displayed */
 var toolbarOptions = [
     [{ font: [] }],
     [{ size: ["small", false, "large", "huge"] }],
+    [{ header: [1, 2, 3, 4, 5, false] }],
     [{ color: [] }, { background: [] }],
     ["bold", "italic", "underline", "strike"],
     [{ script: "sub" }, { script: "super" }],
     [{ align: [] }],
     ["blockquote", "code-block"],
-    // [{"header": [1, 2, 3, 4, 5, false]}],
     [{ list: "ordered" }, { list: "bullet" }],
     [{ direction: "rtl" }],
-    // [{"indent": "-1"}, {"indent": "+1"}],
-
     ["link", "image"],
 ];
 
+/* quill is set to be a global variable so that all functions can access the editor */
 var quill = new Quill("#editor", {
     modules: {
         toolbar: toolbarOptions,
     },
     theme: "snow",
 });
+
+/* initializes the editor’s placeholder text */
 var initial = "Write your story here...";
 quill.setText(initial);
-// quill.formatText(0, initial.length, "italic", true);
 quill.formatText(0, initial.length, "color", "gray");
 
 var cursor = quill.getSelection();
 
-var moduleTypes = [
+/* constant arrays */
+
+/* moduleTypes lists the readable words that are to be displayed on the UI to the user */
+const moduleTypes = [
     "Awards & Honors",
     "Activities",
     "Education",
@@ -46,7 +46,8 @@ var moduleTypes = [
     "Custom",
 ];
 
-var moduleTypeValues = [
+/* moduleTypeValues lists the HTML values of the corresponding module types; facilitates the generation of dynamic interface */
+const moduleTypeValues = [
     "awards",
     "activities",
     "education",
@@ -56,7 +57,8 @@ var moduleTypeValues = [
     "custom",
 ];
 
-var moduleTypeConvert = {
+/* maps HTML values to their respective module type names */
+const moduleTypeConvert = {
     awards: "Awards & Honors",
     activities: "Activities",
     education: "Education",
@@ -66,18 +68,37 @@ var moduleTypeConvert = {
     custom: "Custom",
 };
 
-class Module {
-    // type can be "awards", "activities", "education", "qualities", "research", "responses", or "custom"
-    constructor(type) {
-        this.type = type;
+/* Parsed data */
+
+var saveNames = new Set();
+var fileIDs = new Set();
+var draftIDs = new Set();
+var curVersions = new Set();
+var projectResumes = JSON.parse(sessionStorage.getItem("projectResumes"));
+var projectModules = JSON.parse(sessionStorage.getItem("projectModules"));
+var resumesBST = new BST();
+var modulesBST = new BST();
+
+/* generates a unique file ID or draft ID */
+function generateID(isFileID) {
+    let ret = Math.floor(Math.random() * 1000000).toString(); // generates an integer from 0 to 999999 and converts it to string
+    if (isFileID) {
+        while (fileIDs.has(ret)) {
+            ret = Math.floor(Math.random() * 1000000).toString();
+        }
+    } else {
+        while (draftIDs.has(ret)) {
+            ret = Math.floor(Math.random() * 1000000).toString();
+        }
     }
+    return ret;
 }
 
-/* File options */
+/* file attributes and options */
 
 var fileName = "File Name";
-var fileID = generateID();
-var draftID = generateID();
+var fileID = generateID(1);
+var draftID = generateID(0);
 var draftVersion = 1;
 var parentDraftID = "";
 var modal = document.getElementById("modal");
@@ -88,14 +109,12 @@ var fileConfirmButton = document.getElementById("openFileConfirm");
 var moduleConfirmButton = document.getElementById("openModuleConfirm");
 var saveButton = document.getElementById("save");
 var exportButton = document.getElementById("export");
-// var consoleButton = document.getElementById("console");
 var loadModulesButton = document.getElementById("loadModules");
 var fileWarning = document.getElementById("fileWarning");
 var saveWarning = document.getElementById("saveWarning");
 var fileNameInput = document.getElementById("fileName");
 var draftVersionInput = document.getElementById("draftVersion");
 var openFile = null;
-
 var fileCardTemplate = document.querySelector("[data-file-template]");
 var fileCardContainer = document.querySelector("[data-file-cards-container]");
 var fileSearchInput = document.querySelector("[data-file-search]");
@@ -108,18 +127,9 @@ var fileSelectedName = "";
 var fileSelectedID = -1;
 var moduleSelectedName = "";
 var moduleSelectedID = -1;
-
-var projectResumes = JSON.parse(sessionStorage.getItem("projectResumes"));
-var projectModules = JSON.parse(sessionStorage.getItem("projectModules"));
-var resumesBST = new BST();
-var modulesBST = new BST();
-
 var moduleTypeInput = document.getElementById("typeSelect");
 var moduleTypeSelected = "all";
 var moduleNameSelected = "";
-
-var names = new Set();
-var curVersions = new Set();
 
 var files = [];
 var modules = [];
@@ -136,14 +146,15 @@ fileSearchInput.addEventListener("input", (e) => {
 });
 
 function loadPreview(previewID, isResume) {
-    previewModal.style.display = "block";
+    previewModal.style.display = "block"; // displays the modal window for preview
     var previewQuill = new Quill("#previewEditor", {
         modules: {
-            toolbar: false,
+            toolbar: false, // disabling the toolbar since this Quill editor is read-only
         },
         theme: "snow",
         readOnly: true,
     });
+    /* parses the Delta content of the requested preview content */
     var delta;
     if (isResume) {
         delta = {
@@ -159,12 +170,10 @@ function loadPreview(previewID, isResume) {
 }
 
 openButton.onclick = function () {
-    // openFile = null;
     fileSelectedName = "";
     fileSelectedID = -1;
     document.getElementById("openFileChosen").innerHTML = "None";
     fileWarning.style.display = "none";
-    // openFileInput.files = init;
     modal.style.display = "block";
 
     files = [];
@@ -172,7 +181,6 @@ openButton.onclick = function () {
 
     for (const key in projectResumes) {
         var item = JSON.parse(projectResumes[key]);
-        // console.log(key);
         const card = fileCardTemplate.content.cloneNode(true).children[0];
         const header = card.querySelector("[data-header]");
         const body = card.querySelector("[data-body]");
@@ -187,7 +195,6 @@ openButton.onclick = function () {
             document.getElementById("openFileChosen").innerHTML =
                 fileSelectedName;
             fileSelectedID = e.currentTarget.children[2].textContent;
-            // console.log(fileSelectedID);
         };
 
         preview.onclick = (e) => {
@@ -197,7 +204,6 @@ openButton.onclick = function () {
         };
 
         fileCardContainer.append(card);
-        // console.log(item);
         files.push({
             fileName: item.fileName,
             draftVersion: item.draftVersion,
@@ -208,20 +214,21 @@ openButton.onclick = function () {
 };
 
 function loadTypeSelect() {
-    var str = '<option value="all"> All Module Types </option>';
+    var str = '<option value="all"> All Module Types </option>'; // the first, default option
     for (let i = 0; i < moduleTypes.length; i++) {
         str +=
             '<option value="' +
             moduleTypeValues[i] +
             '">' +
             moduleTypes[i] +
-            "</option>";
+            "</option>"; // creates HTML code for the select element
     }
     document.getElementById("typeSelect").innerHTML = str;
 }
 
 function listModules() {
     for (const module of modules) {
+        /* makes sure that only modules whose names contain the keyword and whose types correspond to the requested type are displayed */
         const isVisible =
             (moduleTypeSelected == "all" ||
                 moduleTypeSelected == module.moduleType) &&
@@ -230,28 +237,30 @@ function listModules() {
     }
 }
 
+/* function to adjust the displayed module cards when the search input field is changed */
 moduleTypeInput.addEventListener("change", (e) => {
     moduleTypeSelected = e.target.value;
     listModules();
 });
 
+/* function to adjust the displayed module cards when the type select field is changed */
 moduleSearchInput.addEventListener("input", (e) => {
     moduleNameSelected = e.target.value.toLowerCase();
     listModules();
 });
 
 loadModulesButton.onclick = function () {
-    cursor = quill.getSelection();
-    moduleModal.style.display = "block";
-    projectModules = JSON.parse(sessionStorage.getItem("projectModules"));
+    cursor = quill.getSelection(); // gets the position of the selection in the editor
+    moduleModal.style.display = "block"; // displays the modal window for searching modules
+    projectModules = JSON.parse(sessionStorage.getItem("projectModules")); // retrieves the modules stored in the session storage
     modules = [];
     moduleCardContainer.textContent = "";
-    moduleSelectedID = -1;
+    moduleSelectedID = -1; // used when inserting the selected module to the editor
     modulesBST.clear();
     for (const key in projectModules) {
         var item = JSON.parse(projectModules[key]);
         modulesBST.insert(item.draftID, key);
-        const card = moduleCardTemplate.content.cloneNode(true).children[0];
+        const card = moduleCardTemplate.content.cloneNode(true).children[0]; // creating a card as a clone of the card template
         const header = card.querySelector("[data-header]");
         const body = card.querySelector("[data-body]");
         const type = card.querySelector("[data-type]");
@@ -262,13 +271,14 @@ loadModulesButton.onclick = function () {
         body.textContent = "Version " + item.draftVersion;
         type.textContent = moduleTypeConvert[item.moduleType];
         id.textContent = item.draftID;
+        /* clicking on the card changes the information of the currently selected module */
         card.onclick = (e) => {
             moduleSelectedName = e.currentTarget.children[0].textContent;
             document.getElementById("openModuleChosen").innerHTML =
                 moduleSelectedName;
             moduleSelectedID = e.currentTarget.children[3].textContent;
         };
-
+        /* clicking on the "preview" loads the modal window for previewing the module */
         preview.onclick = (e) => {
             var previewID =
                 e.currentTarget.parentElement.children[3].textContent;
@@ -283,7 +293,7 @@ loadModulesButton.onclick = function () {
             draftID: item.draftID,
             moduleType: item.moduleType,
             element: card,
-        });
+        }); // modules is a list containing all module cards
     }
 };
 
@@ -304,10 +314,6 @@ moduleConfirmButton.addEventListener("click", (e) => {
         moduleModal.style.display = "none";
     }
 });
-
-// consoleButton.onclick = function () {
-//     console.log(quill.getContents());
-// };
 
 var openClose = document.getElementById("openClose");
 openClose.onclick = function () {
@@ -357,16 +363,16 @@ function readFile(e) {
 
 fileConfirmButton.addEventListener("click", readFile);
 
+/* generates a unique save name */
 function generateSaveName(fileName) {
-    // makes sure that all save names are unique
     let extension = ".resume.json";
-    if (!names.has(fileName)) {
+    if (!saveNames.has(fileName)) {
         return fileName + extension;
     }
     let cnt = 1;
     while (true) {
         let temp = " (" + cnt + ")";
-        if (!names.has(fileName + temp)) {
+        if (!saveNames.has(fileName + temp)) {
             return fileName + temp + extension;
         }
     }
@@ -374,61 +380,35 @@ function generateSaveName(fileName) {
 
 saveButton.onclick = async function () {
     if (curVersions.has(draftVersion)) {
+        // sees if the current draft version is valid (unused)
         saveWarning.style.display = "block";
     } else {
         saveWarning.style.display = "none";
-        let delta = quill.getContents();
+        let delta = quill.getContents(); // retrieves the content of the editor as Delta
+        let saveName = generateSaveName(fileName); // self-defined function to generate a unique save name
+
+        /* adds additional attributes to the object to be saved */
         delta["draftVersion"] = draftVersion;
         delta["fileName"] = fileName;
+        delta["saveName"] = saveName;
         delta["fileID"] = fileID;
         delta["draftID"] = draftID;
         delta["parentDraftID"] = parentDraftID;
         let textToSave = JSON.stringify(delta);
         let blob = new Blob([textToSave], { type: "text/plain" });
-        let saveName = generateSaveName(fileName);
-        saveAs(blob, saveName);
-        // console.log(saveName);
-        // projectResumes[saveName] = textToSave;
-        // sessionStorage.setItem(
-        //     "projectResumes",
-        //     JSON.stringify(projectResumes)
-        // );
-        // loadPage();
-        draftID = generateID();
+        saveAs(blob, saveName); // saveAs is a function in FileSaver.js
+        draftID = generateID(0); // re-generates the current draft ID
     }
 };
 
-// import { saveAs } from "file-saver";
-// import { pdfExporter } from "./quill-to-pdf";
-// import "./quill-to-pdf";
-// import { pdfExporter } from "../node_modules/quill-to-pdf/dist/main.js;
-
-exportButton.onclick = async function () {
-    // let delta = quill.getContents();
-    // let pdfBlob = await pdfExporter.generatePdf(delta);
-    // saveAs(pdfBlob, "pdf-export.pdf");
-    // const html = quill.getSemanticHTML(0);
-    var wrapper = document.createElement("div");
-
-    var html = quill.container.firstChild.innerHTML;
+exportButton.onclick = function () {
+    var wrapper = document.createElement("div"); // wrapper to wrap the Quill HTML content
+    var html = quill.container.firstChild.innerHTML; // retrieves the HTML of the Quill content
     wrapper.innerHTML = html;
     html = wrapper;
     html.style = "width: 350pt";
-    var pdf = new jsPDF("p", "pt", "a4");
+    var pdf = new jsPDF("p", "pt", "a4"); // sets the orientation, unit, and page format
 
-    var specialElementHandlers = {
-        // element with id of "bypass" - jQuery style selector
-        "#bypassme": function (element, renderer) {
-            // true = "handled elsewhere, bypass text extraction"
-            return true;
-        },
-    };
-    var margins = {
-        top: 20,
-        bottom: 20,
-        left: 20,
-        width: 20,
-    };
     pdf.html(html, {
         callback: function (pdf) {
             pdf.save(fileName + ".pdf");
@@ -451,38 +431,34 @@ window.addEventListener("load", (e) => {
     loadPage();
 });
 
-var root = -1;
 var versionsTree = new Tree();
-
 var versionsHTML = "";
 
 function printTree(curNode) {
-    versionsHTML += "<li class='triggerPreview' id='" + curNode.value + "'>";
-    // console.log(curNode);
-    var item = JSON.parse(projectResumes[resumesBST.search(curNode.value)]);
+    versionsHTML += "<li class='triggerPreview' id='" + curNode.value + "'>"; // setting the class as “triggerPreview” to link to the onclick function defined in loadVersions
+    var item = JSON.parse(projectResumes[resumesBST.search(curNode.value)]); // retrieves the file corresponding to curNode
     versionsHTML += item.fileName + " (Version " + item.draftVersion + ")";
     versionsHTML += "<ul>";
     for (const node of curNode.children) {
         if (node == null || node.value == "") continue;
-        printTree(node);
+        printTree(node); // recursively traverse the version tree
     }
     versionsHTML += "</ul>";
     versionsHTML += "</li>";
 }
 
 function loadVersions() {
-    // var str = "";
-    curVersions = new Set();
-
-    root = -1;
+    curVersions = new Set(); // a set containing all versions related to the current draft; will be used to detect whether the version number the user enters is existing
     resumesBST.clear();
     versionsTree.clear();
     for (const key in projectResumes) {
         var item = JSON.parse(projectResumes[key]);
         resumesBST.insert(item.draftID, key);
-        names.add(item.fileName);
-        // console.log(item.fileID, fileID);
+        saveNames.add(item.saveName); // saveNames is a set containing all files' save names
+        fileIDs.add(item.fileID); // fileIDs is a set containing all files' file IDs
+        draftIDs.add(item.draftID); // draftIDs is a set containing all drafts' draft IDs
         if (item.fileID == fileID) {
+            /* adds item to the version tree if it shares the same file ID as the open file */
             if (item.parentDraftID == "") {
                 versionsTree.setRootbyValue(item.draftID);
             } else {
@@ -501,37 +477,16 @@ function loadVersions() {
     }
 
     document.getElementById("versionList").innerHTML = versionsHTML;
+    /* sets the onclick function for file previewing for each item in the version tree */
     const elements = document.getElementsByClassName("triggerPreview");
     [...elements].forEach((item) => {
         item.onclick = (e) => {
             loadPreview(e.target.id, true);
         };
     });
-
-    // if (str == "") {
-    //     str =
-    //         "<tr><td><a> This file only has the current version. </a></td></tr>";
-    // }
-    // document.getElementById("tableContent").innerHTML = str;
 }
 
 function loadPage() {
-    projectResumes = JSON.parse(sessionStorage.getItem("projectResumes"));
+    projectResumes = JSON.parse(sessionStorage.getItem("projectResumes")); // retrieves the resumes stored in the session storage
     loadVersions();
 }
-
-// document.getElementById("quillTest").addEventListener("click", (e) => {
-//     var cursor = quill.getSelection();
-//     var text = "new text to be inserted";
-//     var delta = {
-//         ops: [
-//             { retain: cursor.index },
-//             { insert: "Gandalf", attributes: { bold: true } },
-//             { insert: " the " },
-//             { insert: "Grey", attributes: { color: "#cccccc" } },
-//         ],
-//     };
-//     // quill.insertText(cursor.index, delta, "bold", true);
-//     quill.updateContents(delta);
-//     console.log(cursor.index);
-// });

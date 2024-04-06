@@ -1,25 +1,22 @@
-import { BST } from "./dsa.js";
+import { BST, Tree } from "./dsa.js";
 
 function generateID() {
     return Math.floor(Math.random() * 1000000).toString();
 }
 
-/* Sets up the text editor */
+/* sets up the text editor */
 
 var toolbarOptions = [
     [{ font: [] }],
     [{ size: ["small", false, "large", "huge"] }],
+    [{ header: [1, 2, 3, 4, 5, false] }],
     [{ color: [] }, { background: [] }],
     ["bold", "italic", "underline", "strike"],
     [{ script: "sub" }, { script: "super" }],
     [{ align: [] }],
     ["blockquote", "code-block"],
-    // [{"header": [1, 2, 3, 4, 5, false]}],
     [{ list: "ordered" }, { list: "bullet" }],
     [{ direction: "rtl" }],
-    // [{"indent": "-1"}, {"indent": "+1"}],
-    // [{"direction": "rtl"}],
-
     ["link", "image"],
 ];
 
@@ -31,10 +28,9 @@ var quill = new Quill("#editor", {
 });
 var initial = "Complete your module here...";
 quill.setText(initial);
-// quill.formatText(0, initial.length, "italic", true);
 quill.formatText(0, initial.length, "color", "gray");
 
-var moduleTypes = [
+const moduleTypes = [
     "Awards & Honors",
     "Activities",
     "Education",
@@ -44,7 +40,7 @@ var moduleTypes = [
     "Custom",
 ];
 
-var moduleTypeValues = [
+const moduleTypeValues = [
     "awards",
     "activities",
     "education",
@@ -57,13 +53,12 @@ var moduleTypeValues = [
 var fileName = "File Name";
 var fileID = generateID();
 var draftID = generateID();
+var parentDraftID = "";
 var draftVersion = 1;
 var moduleType = "";
-var fileDefault = 1;
 var openButton = document.getElementById("open");
-var confirmButton = document.getElementById("openConfirm");
+var fileConfirmButton = document.getElementById("openFileConfirm");
 var saveButton = document.getElementById("save");
-var exportButton = document.getElementById("export");
 var modal = document.getElementById("modal");
 
 var fileNameInput = document.getElementById("fileName");
@@ -77,10 +72,17 @@ var fileSearchInput = document.querySelector("[data-file-search]");
 var fileSelectedName = "";
 var fileSelectedID = -1;
 
-var projectResumes = JSON.parse(sessionStorage.getItem("projectResumes"));
 var projectModules = JSON.parse(sessionStorage.getItem("projectModules"));
 
 var modulesBST = new BST();
+
+var versionsTree = new Tree();
+var versionsHTML = "";
+
+var saveNames = new Set();
+var fileIDs = new Set();
+var draftIDs = new Set();
+var curVersions = new Set();
 
 var files = [];
 
@@ -119,12 +121,10 @@ fileSearchInput.addEventListener("input", (e) => {
 });
 
 openButton.onclick = function () {
-    // openFile = null;
     fileSelectedName = "";
     fileSelectedID = -1;
     document.getElementById("openFileChosen").innerHTML = "None";
     fileWarning.style.display = "none";
-    // openFileInput.files = init;
     modal.style.display = "block";
 
     files = [];
@@ -134,7 +134,6 @@ openButton.onclick = function () {
 
     for (const key in projectModules) {
         var item = JSON.parse(projectModules[key]);
-        // console.log(key);
         modulesBST.insert(item.draftID, key);
         const card = fileCardTemplate.content.cloneNode(true).children[0];
         const header = card.querySelector("[data-header]");
@@ -150,7 +149,6 @@ openButton.onclick = function () {
             document.getElementById("openFileChosen").innerHTML =
                 fileSelectedName;
             fileSelectedID = e.currentTarget.children[2].textContent;
-            // console.log(fileSelectedID);
         };
 
         preview.onclick = (e) => {
@@ -189,6 +187,7 @@ saveButton.onclick = async function () {
     delta["fileID"] = fileID;
     delta["draftID"] = draftID;
     delta["moduleType"] = moduleType;
+    delta["parentDraftID"] = parentDraftID;
     let textToSave = JSON.stringify(delta);
     let blob = new Blob([textToSave], { type: "text/plain" });
     saveAs(blob, fileName + ".module.json");
@@ -197,15 +196,92 @@ saveButton.onclick = async function () {
 
 window.addEventListener("load", loadPage);
 
+function printTree(curNode) {
+    versionsHTML += "<li class='triggerPreview' id='" + curNode.value + "'>";
+    var item = JSON.parse(projectModules[modulesBST.search(curNode.value)]);
+    versionsHTML += item.fileName + " (Version " + item.draftVersion + ")";
+    versionsHTML += "<ul>";
+    for (const node of curNode.children) {
+        if (node == null || node.value == "") continue;
+        printTree(node);
+    }
+    versionsHTML += "</ul>";
+    versionsHTML += "</li>";
+}
+
+function loadVersions() {
+    curVersions = new Set();
+    modulesBST.clear();
+    versionsTree.clear();
+    for (const key in projectModules) {
+        var item = JSON.parse(projectModules[key]);
+        modulesBST.insert(item.draftID, key);
+        saveNames.add(item.saveName);
+        fileIDs.add(item.fileID);
+        draftIDs.add(item.draftID);
+        if (item.fileID == fileID) {
+            if (item.parentDraftID == "") {
+                versionsTree.setRootbyValue(item.draftID);
+            } else {
+                versionsTree.addEdgebyValues(item.parentDraftID, item.draftID);
+            }
+            curVersions.add(item.draftVersion);
+        }
+    }
+    versionsTree.build();
+    if (versionsTree.size == 0) {
+        versionsHTML = "This file only has the current version.";
+    } else {
+        versionsHTML = "<ul>";
+        printTree(versionsTree.root);
+        versionsHTML += "</ul>";
+    }
+
+    document.getElementById("versionList").innerHTML = versionsHTML;
+    const elements = document.getElementsByClassName("triggerPreview");
+    [...elements].forEach((item) => {
+        item.onclick = (e) => {
+            loadPreview(e.target.id, true);
+        };
+    });
+}
+
 function loadPage() {
     var str = '<option value=""> -- Please choose a module type -- </option>';
     for (let i = 0; i < moduleTypes.length; i++) {
         str +=
             '<option value="' +
             moduleTypeValues[i] +
+            '" id="' +
+            moduleTypeValues[i] +
             '">' +
             moduleTypes[i] +
             "</option>";
     }
     document.getElementById("typeSelect").innerHTML = str;
+    loadVersions();
 }
+
+function readFile(e) {
+    if (fileSelectedID == -1) {
+        fileWarning.style.display = "block";
+    } else {
+        let openFile = JSON.parse(
+            projectModules[modulesBST.search(fileSelectedID)]
+        );
+        quill.setContents(openFile.ops);
+        modal.style.display = "none";
+        draftVersion = openFile["draftVersion"];
+        fileName = openFile["fileName"];
+        fileID = openFile["fileID"];
+        parentDraftID = openFile["draftID"];
+        moduleType = openFile["moduleType"];
+        fileNameInput.value = fileName;
+        draftVersionInput.value = draftVersion;
+
+        document.getElementById(moduleType).selected = true;
+        loadPage();
+    }
+}
+
+fileConfirmButton.addEventListener("click", readFile);
